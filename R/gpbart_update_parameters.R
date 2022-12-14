@@ -123,7 +123,7 @@ update_mu_node <- function(node,
         res_node <- res_vec[node$obs_train]
         # Calculating the v factor from equation 11
         distance_sq_matrix <- symm_distance_matrix(m1 = x_train_node,phi_vector = phi_vector_p)
-        omega_plus_tau_diag <- (nu^(-1))*exp(-distance_sq_matrix)+diag(1/(tau*nu^(-1)),nrow = nrow(distance_sq_matrix))
+        omega_plus_tau_diag <- (nu^(-1))*exp(-distance_sq_matrix)+diag(1/(tau*nu),nrow = nrow(distance_sq_matrix))
         inv_omega_plus_tau <- chol2inv(chol(omega_plus_tau_diag))
         # Calculating S
         S <- sum(inv_omega_plus_tau)+tau_mu
@@ -185,7 +185,7 @@ update_g_node <- function(node,
         # Calculating the v factor from equation 11
         distance_sq_matrix <- symm_distance_matrix(m1 = x_train_node,phi_vector = phi_vector_p)
         omega <- (nu^(-1))*exp(-distance_sq_matrix) + 1/tau_mu
-        omega_plus_tau_diag <- omega+ diag(1/(tau*nu^(-1)),nrow = nrow(distance_sq_matrix))
+        omega_plus_tau_diag <- omega+ diag(1/(tau*nu),nrow = nrow(distance_sq_matrix))
         inv_omega_plus_tau <- chol2inv(chol(omega_plus_tau_diag))
 
         if(!test_only){
@@ -325,8 +325,8 @@ update_single_nu <- function(current_trees,
         y_post_mean <- big_block_permutation%*%big_long_mean_matrix
         y_post_cov <- big_block_permutation%*%big_block_distance%*%t(big_block_permutation)
         kernel_post_cov <- kernel_function(as.matrix(y_post_cov),nu = 1)
-        old_nu_log <- mvnfast::dmvn(X = y_train,mu = as.matrix(y_post_mean),sigma = (current_nu^(-1))*kernel_post_cov+diag(((current_nu^-1)*tau)^-1,nrow = nrow(x_train)),log = TRUE)
-        new_nu_log <- mvnfast::dmvn(X = y_train,mu = as.matrix(y_post_mean),sigma = (proposal_nu^(-1))*kernel_post_cov+diag(((proposal_nu^-1)*tau)^-1,nrow = nrow(x_train)),log = TRUE)
+        old_nu_log <- mvnfast::dmvn(X = y_train,mu = as.matrix(y_post_mean),sigma = (current_nu^(-1))*kernel_post_cov+diag(((current_nu)*tau)^-1,nrow = nrow(x_train)),log = TRUE)
+        new_nu_log <- mvnfast::dmvn(X = y_train,mu = as.matrix(y_post_mean),sigma = (proposal_nu^(-1))*kernel_post_cov+diag(((proposal_nu)*tau)^-1,nrow = nrow(x_train)),log = TRUE)
 
         # Addin gthe prior term
         prior_old <- stats::dgamma(x = current_nu,shape = 4*(K_bart^2)*n_tree*0.1,rate = 0.1,log = TRUE)
